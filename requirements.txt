@@ -1,4 +1,3 @@
 streamlit
-whisper
-requests
 python-dotenv
+google-generativeai
