@@ -100,7 +100,7 @@ if data:
         st.metric("Username", data.get("username", "Anonymous")) # Default to Anonymous
 
     st.subheader("🗂️ Categorization & Location")
-    col4, col5 = st.columns(2)
+    col4, col5, col6 = st.columns(3) # Added a column for original_language
     with col4:
         st.metric("Category", data.get("category", "Uncategorized")) # Default to Uncategorized
     with col5:
@@ -111,9 +111,14 @@ if data:
         display_lat = latitude if latitude is not None and latitude != "" else "N/A"
         display_lon = longitude if longitude is not None and longitude != "" else "N/A"
         st.metric("Coordinates", f"Lat: {display_lat}, Lon: {display_lon}")
+    with col6: # New column for original language
+        st.metric("Original Language", data.get("original_language", "N/A"))
+
 
     st.subheader("🗣️ Transcription and Translation")
-    st.text_area("📝 Telugu Transcription", data.get("transcription_telugu", "No Telugu transcription available."), height=200, disabled=True)
+    # Dynamically set the label for the original language transcription
+    original_lang = data.get("original_language", "Original Language")
+    st.text_area(f"📝 {original_lang} Transcription", data.get("transcription_original_language", f"No {original_lang} transcription available."), height=200, disabled=True)
     st.text_area("🌍 English Translation", data.get("translation_english", "No English translation available."), height=300, disabled=True)
 
     # --- New Summary Section ---
