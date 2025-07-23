@@ -28,15 +28,15 @@ genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 # --- Streamlit Page Setup ---
-st.set_page_config(page_title="Gemini Audio STT + Translation", layout="centered")
+st.set_page_config(page_title="Gemini Audio STT + Translation + Summary", layout="centered")
 
-st.title("🗣️ Gemini Audio STT + Translation – Telugu Audio to English")
+st.title("🗣️ Gemini Audio STT + Translation + Summary – Telugu Audio to English")
 st.markdown("""
 Upload a short audio clip (10–30 seconds) in **Telugu**.
 
-🧠 **Gemini (Google AI)** will transcribe it in Telugu and then translate it to **English**.
+🧠 **Gemini (Google AI)** will transcribe it in Telugu, translate it to **English**, and then generate a **structured summary**.
 
-> ✅ All done with a single Gemini API call!
+> ✅ All done with a single Gemini API call (transcription + translation + summary)!
 """)
 
 # --- Session State Initialization ---
@@ -44,6 +44,8 @@ if "telugu_text" not in st.session_state:
     st.session_state.telugu_text = ""
 if "translated_text" not in st.session_state:
     st.session_state.translated_text = ""
+if "summary_data" not in st.session_state:
+    st.session_state.summary_data = None # Will store dict {title, category, instructions}
 
 # --- User Metadata Section (using st.expander for a cleaner look) ---
 with st.expander("🧾 Additional Information (Optional)", expanded=False):
@@ -52,7 +54,7 @@ with st.expander("🧾 Additional Information (Optional)", expanded=False):
     with col1:
         username = st.text_input("👤 Your Name", key="username_input")
     with col2:
-        category = st.selectbox("📁 Category", ["Story", "Interview", "News", "Other"], key="category_select")
+        category = st.selectbox("📁 Category", ["Story", "Interview", "News", "Tutorial: Pottery", "Other"], key="category_select")
 
     col3, col4 = st.columns(2)
     with col3:
@@ -75,81 +77,154 @@ if audio_file is not None:
 
     st.audio(temp_path, format=f"audio/{ext.lstrip('.')}") # Display the audio player
 
-    # --- Transcription & Translation Button ---
-    # The button now triggers both transcription and translation via Gemini
-    if st.button("📝🌐 Transcribe & Translate Audio with Gemini", use_container_width=True, type="primary"):
+    # --- Transcription & Translation & Summary Button ---
+    if st.button("📝🌐✨ Process Audio with Gemini (Transcribe, Translate & Summarize)", use_container_width=True, type="primary"):
         if temp_path: # Ensure temp_path exists before processing
+            audio_data = None # Initialize audio_data here for finally block
             try:
                 start_time = time.time()
-                with st.spinner("Processing audio with Gemini AI (transcribing & translating)... This might take a moment."):
-                    # Prepare the audio file for Gemini
+                with st.spinner("Processing audio with Gemini AI (transcribing, translating & summarizing)... This might take a moment."):
+                    st.info(f"Attempting to upload audio file from temp_path: {temp_path}")
                     audio_data = genai.upload_file(temp_path)
+                    
+                    if not audio_data or not audio_data.name:
+                        st.error("Failed to upload audio file to Gemini. 'audio_data' is invalid or upload failed.")
+                        # Raise a ValueError to be caught by the outer try-except block
+                        raise ValueError("Gemini file upload failed.")
 
-                    # Construct the prompt for Gemini API
-                    # We ask Gemini to output both the Telugu transcription and English translation
-                    prompt_for_gemini = """Please transcribe the following audio in Telugu and then translate the Telugu transcription into fluent, natural English. Ensure the meaning, tone, and context are preserved. The input corpus might contain a mix of other languages and grammatical errors. Focus on the essence of the content.
+                    st.info(f"Audio file successfully uploaded to Gemini. File Name: {audio_data.name}, URI: {audio_data.uri}")
 
-Format your response clearly as follows:
-Telugu Transcription: [Transcribed Telugu Text Here]
-English Translation: [Translated English Text Here]
-"""
-                    # Send audio and prompt to Gemini
+                    # Construct the prompt for Gemini API - Adjusted to match Gemini's actual output format
+                    prompt_for_gemini = """Please transcribe the following audio in Telugu. Then, translate the Telugu transcription into fluent, natural English.
+                    Finally, analyze the English translation and provide a structured summary in JSON format.
+                    If the content is a tutorial (e.g., pottery), structure the summary with a "title", a "category" (e.g., "Pottery Tutorial"), and an "instructions" array where each element is a numbered step.
+                    If it's not a tutorial, provide a "title", a "category" (e.g., "General Summary"), and a "summary_text" field.
+                    Ensure the meaning, tone, and context are preserved throughout. The input corpus might contain a mix of other languages and grammatical errors. Focus on the essence of the content.
+
+                    Format your full response clearly as follows, including the markdown bolding and newlines:
+
+                    **Telugu Transcription:**
+                    [Transcribed Telugu Text Here]
+
+                    **English Translation:**
+                    [Translated English Text Here]
+
+                    **Summary JSON:**
+                    ```json
+                    {
+                      "title": "Summary Title",
+                      "category": "Pottery Tutorial" or "General Summary",
+                      "instructions": [
+                        "1. First step...",
+                        "2. Second step...",
+                        ...
+                      ]
+                    }
+                    ```
+                    OR
+                    ```json
+                    {
+                      "title": "Summary Title",
+                      "category": "General Summary",
+                      "summary_text": "A concise summary of the content."
+                    }
+                    ```
+                    """
+                    st.info("Sending request to Gemini model...")
                     response = model.generate_content([
                         {"role": "user", "parts": [
                             {"text": prompt_for_gemini},
                             audio_data # The audio file content
                         ]}
                     ])
+                    st.info("Received response from Gemini model.")
 
                 full_response_text = response.text
                 duration = time.time() - start_time
                 st.success(f"✅ Processing completed in {duration:.2f} seconds!")
+                st.markdown("---")
+                st.subheader("Raw Gemini API Response (for debugging):")
+                st.text(full_response_text)
+                st.markdown("---")
 
-                # Parse the response to extract Telugu and English parts
-                telugu_prefix = "Telugu Transcription: "
-                english_prefix = "English Translation: "
 
-                telugu_start = full_response_text.find(telugu_prefix)
-                english_start = full_response_text.find(english_prefix)
+                # Parse the response to extract Telugu, English, and JSON summary parts
+                # Adjusted prefixes to precisely match Gemini's output format
+                telugu_prefix_marker = "**Telugu Transcription:**"
+                english_prefix_marker = "**English Translation:**"
+                summary_json_block_start_marker = "```json" # This is the crucial marker for the JSON content itself
+                summary_json_block_end_marker = "```"
 
-                if telugu_start != -1 and english_start != -1:
-                    # Extract Telugu text
-                    telugu_text_raw = full_response_text[telugu_start + len(telugu_prefix):english_start].strip()
-                    st.session_state.telugu_text = telugu_text_raw
+                # Find the markers
+                telugu_start_idx = full_response_text.find(telugu_prefix_marker)
+                english_start_idx = full_response_text.find(english_prefix_marker)
+                json_block_start_idx = full_response_text.find(summary_json_block_start_marker)
+                json_block_end_idx = full_response_text.find(summary_json_block_end_marker, json_block_start_idx + len(summary_json_block_start_marker))
 
-                    # Extract English text
-                    translated_text_raw = full_response_text[english_start + len(english_prefix):].strip()
-                    st.session_state.translated_text = translated_text_raw
+                st.info(f"Parsing indices: telugu_start_idx={telugu_start_idx}, english_start_idx={english_start_idx}, json_block_start_idx={json_block_start_idx}, json_block_end_idx={json_block_end_idx}")
+
+                # Ensure all markers are found and in a logical order
+                if (telugu_start_idx != -1 and
+                    english_start_idx != -1 and
+                    json_block_start_idx != -1 and
+                    json_block_end_idx != -1 and
+                    telugu_start_idx < english_start_idx < json_block_start_idx):
                     
-                    st.success("✅ Transcription and Translation extracted!")
+                    # Extract Telugu text: from after its marker to before English marker, stripping newlines
+                    telugu_text_raw = full_response_text[telugu_start_idx + len(telugu_prefix_marker):english_start_idx].strip()
+                    st.session_state.telugu_text = telugu_text_raw.strip() 
 
-                    # --- Save Data Function ---
-                    def save_data(transcription, translation, system_prompt, username_val, latitude_val, longitude_val, category_val):
-                        """Saves transcription and translation data to a JSON file."""
-                        os.makedirs("data", exist_ok=True) # Ensure 'data' directory exists
-                        file_id = str(uuid.uuid4()) # Generate a unique ID for the file
-                        data = {
-                            "id": file_id,
-                            "timestamp": datetime.now().isoformat(),
-                            "username": username_val if username_val else "Anonymous",
-                            "coordinates": {
-                                "latitude": latitude_val if latitude_val else None,
-                                "longitude": longitude_val if longitude_val else None
-                            },
-                            "category": category_val,
-                            "transcription_telugu": transcription,
-                            "translation_english": translation,
-                            "system_prompt": system_prompt
-                        }
-                        file_path = f"data/{file_id}.json"
-                        with open(file_path, "w", encoding="utf-8") as f:
-                            json.dump(data, f, ensure_ascii=False, indent=2)
-                        return file_id
+                    # Extract English text: from after its marker to before JSON block marker, stripping newlines
+                    translated_text_raw = full_response_text[english_start_idx + len(english_prefix_marker):json_block_start_idx].strip()
+                    st.session_state.translated_text = translated_text_raw.strip()
 
-                    # Save the data
+                    # Extract JSON string
+                    json_string = full_response_text[json_block_start_idx + len(summary_json_block_start_marker):json_block_end_idx].strip()
+                    try:
+                        st.session_state.summary_data = json.loads(json_string)
+                        st.success("✅ Transcription, Translation, and Summary extracted and parsed successfully!")
+                    except json.JSONDecodeError as e:
+                        st.error(f"Failed to parse Summary JSON. JSONDecodeError: {e}")
+                        st.text(f"Attempted to parse this JSON string:\n```json\n{json_string}\n```") # Display malformed JSON for debugging
+                        st.session_state.summary_data = None
+                else:
+                    st.error("Gemini API response did not contain all expected sections in the correct order, or parsing markers were not found. This means parsing failed.")
+                    st.info("Please examine the 'Raw Gemini API Response' above and the 'Parsing indices' to understand why.")
+                    st.session_state.telugu_text = ""
+                    st.session_state.translated_text = ""
+                    st.session_state.summary_data = None
+
+
+                # --- Save Data Function ---
+                def save_data(transcription, translation, summary, system_prompt, username_val, latitude_val, longitude_val, category_val):
+                    """Saves transcription, translation, and summary data to a JSON file."""
+                    os.makedirs("data", exist_ok=True) # Ensure 'data' directory exists
+                    file_id = str(uuid.uuid4()) # Generate a unique ID for the file
+                    data = {
+                        "id": file_id,
+                        "timestamp": datetime.now().isoformat(),
+                        "username": username_val if username_val else "Anonymous",
+                        "coordinates": {
+                            "latitude": latitude_val if latitude_val else None,
+                            "longitude": longitude_val if longitude_val else None
+                        },
+                        "category": category_val,
+                        "transcription_telugu": transcription,
+                        "translation_english": translation,
+                        "summary_data": summary, # Add summary data here
+                        "system_prompt": system_prompt
+                    }
+                    file_path = f"data/{file_id}.json"
+                    with open(file_path, "w", encoding="utf-8") as f:
+                        json.dump(data, f, ensure_ascii=False, indent=2)
+                    return file_id
+
+                # Save the data
+                if st.session_state.telugu_text and st.session_state.translated_text and st.session_state.summary_data:
                     file_id = save_data(
                         transcription=st.session_state.telugu_text,
                         translation=st.session_state.translated_text,
+                        summary=st.session_state.summary_data,
                         system_prompt=prompt_for_gemini, # Use the prompt sent to Gemini
                         username_val=username,
                         latitude_val=latitude,
@@ -157,35 +232,67 @@ English Translation: [Translated English Text Here]
                         category_val=category
                     )
                     st.info(f"📁 Data saved as `data/{file_id}.json`")
-
                 else:
-                    st.error("Gemini API response did not contain expected 'Telugu Transcription' or 'English Translation' sections. Raw response:")
-                    st.text(full_response_text) # Display the full response for debugging
+                    st.warning("Could not save data due to missing transcription, translation, or summary after successful API call and parsing attempt. Check logs for details.")
 
+            except ValueError as ve:
+                st.error(f"A critical error occurred: {ve}")
             except Exception as e:
-                st.error(f"An error occurred during Gemini processing: {e}")
+                st.error(f"An unexpected error occurred during Gemini processing: {e}")
                 st.exception(e) # Display full traceback for debugging
             finally:
                 # Clean up the temporary file and uploaded audio file
-                if os.path.exists(temp_path):
-                    os.remove(temp_path)
+                if temp_path and os.path.exists(temp_path):
+                    try:
+                        os.remove(temp_path)
+                        st.info(f"Cleaned up local temporary audio file: {temp_path}")
+                    except Exception as e:
+                        st.warning(f"Could not delete local temporary file {temp_path}: {e}")
+                
                 # Clean up the uploaded file from Gemini's storage
-                if 'audio_data' in locals() and audio_data:
+                # Ensure audio_data is defined and has a name before attempting to delete
+                if audio_data and audio_data.name:
                     try:
                         genai.delete_file(audio_data.name)
-                        st.info("Cleaned up temporary Gemini uploaded file.")
+                        st.info(f"Cleaned up temporary Gemini uploaded file: {audio_data.name}")
                     except Exception as e:
-                        st.warning(f"Could not delete Gemini uploaded file: {e}")
+                        st.warning(f"Could not delete Gemini uploaded file {audio_data.name}: {e}")
+                else:
+                    st.info("No Gemini uploaded file to clean up (or upload failed).")
         else:
-            st.warning("Please upload an audio file first.")
+            st.warning("Please upload an audio file first before clicking the process button.")
 
 # --- Display Transcription and Translation Sections ---
 if st.session_state.telugu_text:
-    st.subheader("Transcription & Translation")
-    st.text_area("📝 Telugu Transcript", st.session_state.telugu_text, height=180, disabled=True)
+    st.subheader("📝 Telugu Transcript")
+    st.text_area("Telugu Transcript", st.session_state.telugu_text, height=180, disabled=True)
 
 if st.session_state.translated_text:
-    st.text_area("🌍 English Translation", st.session_state.translated_text, height=250, disabled=True)
+    st.subheader("🌍 English Translation")
+    st.text_area("English Translation", st.session_state.translated_text, height=250, disabled=True)
+
+# --- Display Summary Section ---
+if st.session_state.summary_data:
+    st.subheader("✨ Summary")
+    summary = st.session_state.summary_data
+    
+    if summary.get("title"):
+        st.markdown(f"**Title:** {summary['title']}")
+    
+    if summary.get("category"):
+        st.markdown(f"**Category:** {summary['category']}")
+        
+    if summary.get("instructions"):
+        st.markdown("**Instructions:**")
+        for i, instruction in enumerate(summary["instructions"]):
+            # Display instructions with proper numbering, even if not provided by Gemini in the string
+            st.markdown(f"{i+1}. {instruction.lstrip(f'{i+1}. ').strip()}") # Removes potential "1." from start
+    elif summary.get("summary_text"):
+        st.markdown("**Summary:**")
+        st.markdown(summary["summary_text"])
+    else:
+        st.warning("Summary data found, but unexpected format or empty. Displaying raw JSON for debug:")
+        st.json(summary) # Show raw JSON for debugging
 
 st.markdown("---")
 st.markdown("Developed with ❤️ by Dev_404")
