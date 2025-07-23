@@ -6,7 +6,7 @@ import glob # Import glob to find files matching a pattern
 
 st.set_page_config(page_title="JSON Data Viewer", layout="centered")
 
-st.title("📄 JSON Data Viewer")
+st.title("Parampara AI: Data Collection Viewer")
 st.markdown("This page allows you to browse and display details from JSON files stored in the `data/` directory. "
             "It supports the transcription, translation, and structured summary output from the Gemini Audio App.")
 

@@ -30,7 +30,7 @@ model = genai.GenerativeModel("gemini-1.5-flash")
 # --- Streamlit Page Setup ---
 st.set_page_config(page_title="Gemini Audio STT + Translation + Summary", layout="centered")
 
-st.title("🗣️ Gemini Audio STT + Translation + Summary – Telugu Audio to English")
+st.title("Parampara AI: Audio Transcription, Translation & Summary")
 st.markdown("""
 Upload a short audio clip (10–30 seconds) in **Telugu**.
 
