@@ -21,6 +21,12 @@ A Streamlit-based app to preserve and process oral traditions using Google's Gem
 
 ---
 
+## System Architechure and Workflow
+
+![](https://res.cloudinary.com/dtqhbvndz/image/upload/v1753257388/archi_iwj7lm.png)
+
+---
+
 ## 📁 File Structure
 
 ```
