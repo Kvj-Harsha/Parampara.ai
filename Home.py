@@ -47,10 +47,10 @@ st.write("Ready to transform your traditional knowledge? Choose an option below 
 col_buttons1, col_buttons2 = st.columns(2)
 
 with col_buttons1:
-    st.page_link("pages/upload.py", label="🗣️ Transcribe & Translate Audio", icon="🔊")
+    st.page_link("pages/Upload.py", label="🗣️ Transcribe & Translate Audio", icon="🔊")
 
 with col_buttons2:
-    st.page_link("pages/collection.py", label="📄 View Your Data Collection", icon="📁")
+    st.page_link("pages/Collection.py", label="📄 View Your Data Collection", icon="📁")
 
 
 st.markdown("<br>", unsafe_allow_html=True) # Add some space
