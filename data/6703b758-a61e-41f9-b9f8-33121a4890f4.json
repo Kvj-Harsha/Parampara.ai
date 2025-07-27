@@ -1,0 +1,25 @@
+{
+  "id": "6703b758-a61e-41f9-b9f8-33121a4890f4",
+  "timestamp": "2025-07-23T11:13:03.313921",
+  "username": "Anonymous",
+  "coordinates": {
+    "latitude": null,
+    "longitude": null
+  },
+  "category": "Story",
+  "transcription_telugu": "నమస్తే అన్నా. మేము మట్టితో పని చేయడం అంటే మాకు జీవితం లాంటిది. మా ఊరిలో మట్టి కళ ఎవరికైనా తెలిసే ఉంటుంది. చిన్నప్పటి నుండి మా నాన్నతో కలిసి నేర్చుకున్నాను. ఇప్పుడు నేను చేస్తుంటే మా కొడుకు కూడా చూస్తున్నాడు. అదే తరం తరంగా పోతుంది. మొదటగా మేము మట్టిని తవ్వుకుంటాం. అది తెల్లగా ఉండే మట్టి అయితే బాగుంటుంది. ఆ మట్టిని తీసుకొని మంచిగా నీళ్లతో కలిపి దాన్ని బాగా నరుకుతాం. నీరు వేసి చేత్తో బాగా చిత్తగొట్టి మృదువుగా చేస్తాం. దానికి కలిపుట అంటారు. ఆ తర్వాత మనం చెక్కరం మీద పెట్టేద్దాం. ఆ చెక్కరం మనం కాళ్ళతో తిప్పుకుంటాం. ఇప్పుడు అయితే కొందరు మోటార్ తో కూడా తిప్పుతారు. కానీ మేము ఇంతవరకు పాత పద్ధతినే వాడుతున్నాం. మట్టిని చెక్కరం మీద పెట్టి చేత్తో మెల్లగా ఆ ఆకారాన్ని ఇవ్వాలి. అది కొంత ప్రాక్టీస్ ఉండాలన్నా ఒక్కోసారి మట్టే మనకు చెబుతుంది ఎలా మలచాలో. ఒక్కసారి ఆ ఆకారం ఇచ్చాక మట్టిని బయట ఉంచి ఆరనివ్వాలి. అది పూర్తిగా పొడిగా అయిన తర్వాత మేము దానికి కొబ్బరితో కుక్కుతో మంటలు పెడతాం. దాన్ని బట్టి కట్టు అంటారు. కొన్ని గంటలు మంటలో ఉంచాక అది గట్టి అయిపోతుంది. పగుళ్లు కూడా రావు. కొందరు ఇంకా రంగులు వేస్తారు. గ్లేజ్ వేస్తారు. కానీ మేము పాత పద్ధతుల్లో సహజంగా ఉంచడమే ఇష్టపడతాం. మనం చేసే ప్రతి కుండ, గింజల పాటి, బొమ్మ అందులో మన గుండె ఉంటుంది అన్నా.",
+  "translation_english": "Hello, brother. For us, working with clay is like life itself. In our village, the art of pottery is known to everyone. I learned it from my father since childhood. Now, my son is also watching me, learning the craft. It's a tradition passed down through generations. First, we dig the clay.  White clay is best. We take that clay and mix it well with water, kneading it thoroughly. We add water, and using our hands, we thoroughly mix it, making it smooth. This process is called \"kaliputa.\" Then, we place it on a potter's wheel. We rotate the wheel with our feet. Nowadays, some use motors, but we still use the traditional method. We place the clay on the wheel and gently shape it with our hands. It requires practice, but the clay itself guides you, showing you how to mold it. Once we've shaped it, we leave the clay to dry. After it's completely dry, we fire it using coconut shells for fuel. This process is called \"batti kattu.\" After a few hours in the fire, it hardens, and it won't crack. Some people add colors or glaze, but we prefer to keep it natural, using the traditional methods.  Every pot, every small decorative piece, every figurine we create has our heart in it, brother.\n\n\n**Summary JSON:**",
+  "summary_data": {
+    "title": "Traditional Pottery Making",
+    "category": "Pottery Tutorial",
+    "instructions": [
+      "1. Dig and collect white clay.",
+      "2. Mix the clay thoroughly with water and knead it until smooth (kaliputa).",
+      "3. Shape the clay on a potter's wheel, rotating it with your feet (or a motor).",
+      "4. Let the shaped clay dry completely.",
+      "5. Fire the dry clay using coconut shell fuel (batti kattu) for several hours.",
+      "6. (Optional) Add colors or glaze."
+    ]
+  },
+  "system_prompt": "Please transcribe the following audio in Telugu. Then, translate the Telugu transcription into fluent, natural English.\n                    Finally, analyze the English translation and provide a structured summary in JSON format.\n                    If the content is a tutorial (e.g., pottery), structure the summary with a \"title\", a \"category\" (e.g., \"Pottery Tutorial\"), and an \"instructions\" array where each element is a numbered step.\n                    If it's not a tutorial, provide a \"title\", a \"category\" (e.g., \"General Summary\"), and a \"summary_text\" field.\n                    Ensure the meaning, tone, and context are preserved throughout. The input corpus might contain a mix of other languages and grammatical errors. Focus on the essence of the content.\n\n                    Format your full response clearly as follows, including the markdown bolding and newlines:\n\n                    **Telugu Transcription:**\n                    [Transcribed Telugu Text Here]\n\n                    **English Translation:**\n                    [Translated English Text Here]\n\n                    **Summary JSON:**\n                    ```json\n                    {\n                      \"title\": \"Summary Title\",\n                      \"category\": \"Pottery Tutorial\" or \"General Summary\",\n                      \"instructions\": [\n                        \"1. First step...\",\n                        \"2. Second step...\",\n                        ...\n                      ]\n                    }\n                    ```\n                    OR\n                    ```json\n                    {\n                      \"title\": \"Summary Title\",\n                      \"category\": \"General Summary\",\n                      \"summary_text\": \"A concise summary of the content.\"\n                    }\n                    ```\n                    "
+}
