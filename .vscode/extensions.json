@@ -1,9 +1,5 @@
 {
   "recommendations": [
-    "ms-python.python",
-    "charliermarsh.ruff",
-    "ms-python.black-formatter",
-    "ms-toolsai.jupyter",
-    "streetsidesoftware.code-spell-checker"
+    "charliermarsh.ruff"
   ]
 }
