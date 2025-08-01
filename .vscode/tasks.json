@@ -1,0 +1,30 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Lint with Ruff",
+      "type": "shell",
+      "command": "ruff check .",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$ruff"]
+    },
+    {
+      "label": "Format with Black",
+      "type": "shell",
+      "command": "black .",
+      "group": "build"
+    },
+    {
+      "label": "Run Streamlit App",
+      "type": "shell",
+      "command": "streamlit run Home.py",
+      "group": "test",
+      "presentation": {
+        "reveal": "always"
+      }
+    }
+  ]
+}
