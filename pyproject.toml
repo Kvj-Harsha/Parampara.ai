@@ -1,0 +1,76 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "parampara-ai"
+version = "1.0.0"
+description = "A Streamlit-based platform to digitize oral traditions using AI-driven transcription, translation, and summarization."
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+
+authors = [
+  { name = "K V Jaya Harsha", email = "harshabobby30@gmail.com" },
+  { name = "MD Arif", email = "email@example.com" },
+  { name = "Chandra", email = "email@example.com" },
+  { name = "Mubbena Shaik", email = "email@example.com" },
+  { name = "Jasmine", email = "email@example.com" }
+]
+
+maintainers = [
+  { name = "VISWAM.AI", email = "engineering@viswam.ai" }
+]
+
+keywords = [
+  "streamlit",
+  "AI",
+  "language-preservation",
+  "translation",
+  "speech-to-text",
+  "google-gemini",
+  "indigenous-knowledge",
+  "telugu",
+  "summarization"
+]
+
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Build Tools",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Operating System :: OS Independent"
+]
+
+[project.urls]
+Homepage = "https://parampara.streamlit.app"
+Repository = "https://github.com/your-org/parampara-ai"
+Documentation = "https://github.com/your-org/parampara-ai#readme"
+Issues = "https://github.com/your-org/parampara-ai/issues"
+
+[tool.setuptools]
+packages = ["parampara_ai"]
+
+[tool.setuptools.package-data]
+"parampara_ai" = ["data/*.json", "*.wav"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+
+[tool.isort]
+profile = "black"
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503"]
+
+[tool.pylint]
+disable = [
+  "missing-docstring",
+  "invalid-name"
+]
