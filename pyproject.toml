@@ -46,11 +46,16 @@ classifiers = [
   "Operating System :: OS Independent"
 ]
 
-[project.urls]
-Homepage = "https://parampara.streamlit.app"
-Repository = "https://github.com/your-org/parampara-ai"
-Documentation = "https://github.com/your-org/parampara-ai#readme"
-Issues = "https://github.com/your-org/parampara-ai/issues"
+[project.optional-dependencies]
+default = [
+  "streamlit",
+  "google-generativeai",
+  "python-dotenv",
+  "pillow",
+  "ruff",
+  "black",
+  "flake8"
+]
 
 [tool.setuptools]
 packages = ["parampara_ai"]
@@ -60,7 +65,7 @@ packages = ["parampara_ai"]
 
 [tool.black]
 line-length = 88
-target-version = ['py38']
+target-version = ["py38"]
 
 [tool.isort]
 profile = "black"
