@@ -3,11 +3,11 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "parampara-ai"
+name = "parampara_ai"
 version = "1.0.0"
 description = "A Streamlit-based platform to digitize oral traditions using AI-driven transcription, translation, and summarization."
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = { text = "AGPL-3.0-only" }
 
 authors = [
@@ -44,6 +44,9 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Operating System :: OS Independent"
+]
+dependencies = [
+    "requests>=2.32.4",
 ]
 
 [project.optional-dependencies]
