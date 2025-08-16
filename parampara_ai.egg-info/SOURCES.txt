@@ -1,0 +1,11 @@
+LICENSE
+README.md
+pyproject.toml
+parampara_ai/Home.py
+parampara_ai/__init__.py
+parampara_ai.egg-info/PKG-INFO
+parampara_ai.egg-info/SOURCES.txt
+parampara_ai.egg-info/dependency_links.txt
+parampara_ai.egg-info/requires.txt
+parampara_ai.egg-info/top_level.txt
+parampara_ai/data/87e7e966-c345-4379-afb6-c2812f575a0b.json
