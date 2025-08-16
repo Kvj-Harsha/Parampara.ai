@@ -1,9 +1,0 @@
-LICENSE
-README.md
-pyproject.toml
-parampara_ai/__init__.py
-parampara_ai.egg-info/PKG-INFO
-parampara_ai.egg-info/SOURCES.txt
-parampara_ai.egg-info/dependency_links.txt
-parampara_ai.egg-info/requires.txt
-parampara_ai.egg-info/top_level.txt

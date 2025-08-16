@@ -1,6 +1,3 @@
-requests>=2.32.4
-
-[default]
 streamlit
 google-generativeai
 python-dotenv
